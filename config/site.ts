@@ -1,69 +1,55 @@
-export type SiteConfig = typeof siteConfig;
+export type SiteConfig = typeof siteConfig
+
+export type NavItem = {
+  label: string
+  href: string
+}
 
 export const siteConfig = {
-  name: "Next.js + NextUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: 'Next.js + NextUI',
+  description: 'Make beautiful websites regardless of your design experience.',
   navItems: [
     {
-      label: "Home",
-      href: "/",
+      label: 'Home',
+      path: '/',
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: 'About',
+      path: '/about',
     },
     {
-      label: "Pricing",
-      href: "/pricing",
+      label: 'Pixel Bakery',
+      path: '/pixel-bakery',
     },
     {
-      label: "Blog",
-      href: "/blog",
+      label: 'Lists',
+      path: '/lists',
     },
     {
-      label: "About",
-      href: "/about",
+      label: 'Product Design',
+      path: '/product-design',
+    },
+    {
+      label: 'Other Projects',
+      path: '/other-projects',
     },
   ],
   navMenuItems: [
     {
-      label: "Profile",
-      href: "/profile",
+      label: 'Profile',
+      path: '/profile',
     },
     {
-      label: "Dashboard",
-      href: "/dashboard",
+      label: 'Dashboard',
+      path: '/dashboard',
     },
     {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
+      label: 'Projects',
+      path: '/projects',
     },
   ],
-  links: {
-    github: "https://github.com/nextui-org/nextui",
-    twitter: "https://twitter.com/getnextui",
-    docs: "https://nextui.org",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
-  },
-};
+  // links: {
+  //   github: 'https://github.com/nextui-org/nextui',
+  //   instagram: 'https://'
+  // },
+}
