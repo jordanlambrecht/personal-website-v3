@@ -13,7 +13,7 @@ import {
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
-import { siteConfig } from '@/config/site'
+import { siteConfig } from '@/lib/site'
 import LogoRotator from '@/components/logoRotator'
 
 export default function Test() {

@@ -1,10 +1,20 @@
+const { withPayload } = require('@payloadcms/next/withPayload')
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
   staticPageGenerationTimeout: 300,
   images: {
-    domains: ['unsplash.it', 'jordanlambrecht.com'], // Add Unsplash's domain here
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
   },
 }
 
-module.exports = nextConfig
+module.exports = withPayload(nextConfig)

@@ -2,7 +2,7 @@
 
 const { nextui } = require('@nextui-org/theme')
 const colors = require('tailwindcss/colors')
-const { creamsicleColors } = require('./config/colors')
+const { creamsicleColors } = require('./lib/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -13,6 +13,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      aspectRatio: {
+        '4/3': '4 / 3',
+        '3/4': '3 / 4',
+        golden: '21 / 13',
+        'golden-reverse': '13 / 21',
+      },
       colors: {
         gray: colors.slate,
         background: creamsicleColors.cream,
