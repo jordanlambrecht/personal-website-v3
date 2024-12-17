@@ -14,27 +14,37 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js and Enable pnpm
+      # 2. Set up Node.js and Install pnpm
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
 
       - name: Install pnpm
-        run: corepack enable && corepack prepare pnpm@latest --activate
+        run: |
+          npm install -g pnpm
+          pnpm --version
 
-      # 3. Install Dependencies
+      # 3. Cache pnpm dependencies
+      - name: Setup pnpm Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # 4. Install Dependencies
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      # 4. Run Semantic Release
+      # 5. Run Semantic Release
       - name: Run Semantic Release
         uses: cycjimmy/semantic-release-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 5. Commit Updated Changelog (Optional)
+      # 6. Commit Updated Changelog (Optional)
       - name: Commit Updated Changelog
         if: success()
         run: |
