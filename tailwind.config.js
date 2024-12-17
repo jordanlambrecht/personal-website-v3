@@ -13,6 +13,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      scale: {
+        99: 0.99,
+      },
       aspectRatio: {
         '4/3': '4 / 3',
         '3/4': '3 / 4',
