@@ -14,7 +14,7 @@ export interface Config {
     users: User;
     media: Media;
     'product-design': ProductDesign;
-    '3d-files': DFile;
+    'product-files': ProductFile;
     lists: List;
     categories: Category;
     pages: Page;
@@ -28,7 +28,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'product-design': ProductDesignSelect<false> | ProductDesignSelect<true>;
-    '3d-files': DFilesSelect<false> | DFilesSelect<true>;
+    'product-files': ProductFilesSelect<false> | ProductFilesSelect<true>;
     lists: ListsSelect<false> | ListsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -113,40 +113,66 @@ export interface ProductDesign {
   id: string;
   title: string;
   mainImage: string | Media;
-  description: string;
+  details?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  enableExtraImages?: boolean | null;
+  enableWrittenContent?: boolean | null;
+  extraImages?: (string | Media)[] | null;
+  extraRichTextContent?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  enableMakerworld?: boolean | null;
+  enableDownload?: boolean | null;
+  enablePurchase?: boolean | null;
+  makerworldLink?: string | null;
+  downloadLink?: (string | null) | ProductFile;
+  purchaseLink?: string | null;
   publishedAt?: string | null;
-  downloadLink: string;
-  enableDownloads?: boolean | null;
-  buyLink?: string | null;
-  enableBuy?: boolean | null;
   status: 'published' | 'draft';
   slug?: string | null;
   slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "3d-files".
+ * via the `definition` "product-files".
  */
-export interface DFile {
+export interface ProductFile {
   id: string;
-  alt: string;
+  description?: string | null;
+  linkedProduct?: (string | null) | ProductDesign;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
   thumbnailURL?: string | null;
-  filename?: string | null;
+  filename: string;
   mimeType?: string | null;
   filesize?: number | null;
   width?: number | null;
@@ -302,8 +328,8 @@ export interface PayloadLockedDocument {
         value: string | ProductDesign;
       } | null)
     | ({
-        relationTo: '3d-files';
-        value: string | DFile;
+        relationTo: 'product-files';
+        value: string | ProductFile;
       } | null)
     | ({
         relationTo: 'lists';
@@ -403,34 +429,32 @@ export interface MediaSelect<T extends boolean = true> {
 export interface ProductDesignSelect<T extends boolean = true> {
   title?: T;
   mainImage?: T;
-  description?: T;
-  publishedAt?: T;
+  details?: T;
+  enableExtraImages?: T;
+  enableWrittenContent?: T;
+  extraImages?: T;
+  extraRichTextContent?: T;
+  enableMakerworld?: T;
+  enableDownload?: T;
+  enablePurchase?: T;
+  makerworldLink?: T;
   downloadLink?: T;
-  enableDownloads?: T;
-  buyLink?: T;
-  enableBuy?: T;
+  purchaseLink?: T;
+  publishedAt?: T;
   status?: T;
   slug?: T;
   slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "3d-files_select".
+ * via the `definition` "product-files_select".
  */
-export interface DFilesSelect<T extends boolean = true> {
-  alt?: T;
+export interface ProductFilesSelect<T extends boolean = true> {
+  description?: T;
+  linkedProduct?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

@@ -1,26 +1,9 @@
 'use client'
 
+import type { ProductDesign } from '@payload-types'
 import React, { useState, useEffect } from 'react'
-import { Media } from '@/components/Media'
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Image,
-  CardFooter,
-  Button,
-  Link,
-} from '@nextui-org/react'
 
-type ProductDesign = {
-  id: string
-  slug: string
-  title?: string
-  description?: string
-  mainImage?: any
-  downloadLink?: string
-  enableDownloads?: boolean
-}
+import { Card, CardHeader, Image, Link } from '@nextui-org/react'
 
 export default function ProductDesignsList({
   designs,
@@ -33,7 +16,7 @@ export default function ProductDesignsList({
 
   useEffect(() => {
     if (designs && designs.length > 0) {
-      setSelectedDesign(designs[0]) // Select first by default
+      setSelectedDesign(designs[0])
     }
   }, [designs])
 
@@ -45,7 +28,7 @@ export default function ProductDesignsList({
           key={design.id}
           href={`product-design/${design.slug}`}
           id={'1'}
-          className='transition cursor-pointer sm:col-span-5 md:col-span-3 aspect-golden hover:border-4'
+          className='transition duration-100 ease-in-out cursor-pointer sm:col-span-5 md:col-span-3 aspect-golden hover:scale-99'
         >
           <CardHeader className='absolute z-10 top-1 flex-col !items-start '>
             <p className='font-bold uppercase text-tiny text-white/60'></p>
@@ -57,49 +40,16 @@ export default function ProductDesignsList({
             removeWrapper
             alt='Card background'
             className='z-0 object-cover w-full h-full'
-            src={design.mainImage.url}
+            src={
+              typeof design.mainImage === 'object' && design.mainImage?.url
+                ? design.mainImage.url
+                : typeof design.mainImage === 'string'
+                  ? design.mainImage
+                  : '/fallback-image.jpg'
+            } //TODO: NEED FALLBACK IMAGE
           />
         </Card>
       ))}
     </div>
   )
 }
-
-// {
-/* Right column: sticky details pane */
-// }
-// {
-//   selectedDesign && (
-//     <div className='top-0 right-0 w-1/3 h-full p-4 overflow-hidden bg-gray-200 '>
-//       <div className='sticky top-0'>
-//         <h1 className='mb-4 text-3xl font-bold'>
-//           {selectedDesign.title || 'Untitled'}
-//         </h1>
-//         {selectedDesign.description && (
-//           <p className='mb-4 text-gray-700'>{selectedDesign.description}</p>
-//         )}
-//         {selectedDesign.mainImage && (
-//           <div className='mb-4 aspect-[4/3] overflow-hidden rounded'>
-//             <Media
-//               resource={selectedDesign.mainImage}
-//               className='object-cover w-full h-full'
-//               imgClassName='object-cover'
-//             />
-//           </div>
-//         )}
-
-//         {/* Download Link if enabled */}
-//         {selectedDesign.enableDownloads && selectedDesign.downloadLink && (
-//           <a
-//             href={selectedDesign.downloadLink}
-//             target='_blank'
-//             rel='noopener noreferrer'
-//             className='inline-block px-4 py-2 mt-4 text-white bg-gray-800 rounded hover:bg-gray-700'
-//           >
-//             Download
-//           </a>
-//         )}
-//       </div>
-//     </div>
-//   )
-// }

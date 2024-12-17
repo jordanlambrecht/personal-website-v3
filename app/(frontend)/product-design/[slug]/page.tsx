@@ -1,88 +1,25 @@
+// app/(frontend)/product-design/[slug]/page.tsx
+
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { draftMode } from 'next/headers'
 import { Media } from '@/components/Media'
-
 import { Button, ButtonGroup } from '@nextui-org/button'
 import { Link } from '@nextui-org/link'
-type ProductDesign = {
-  id: string
-  slug: string
-  title?: string
-  description?: string
-  mainImage?: any
-  downloadLink?: string
-  enableDownloads?: boolean
-}
-export const DownloadIcon = ({
-  fill = 'currentColor',
-  filled,
-  size,
-  height,
-  width,
-  ...props
-}) => {
-  return (
-    <svg
-      fill={filled ? fill : 'none'}
-      height={size || height || 16}
-      viewBox='0 0 16 16'
-      width={size || width || 16}
-      xmlns='http://www.w3.org/2000/svg'
-      {...props}
-    >
-      <path
-        fill={fill}
-        d='M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M8 5a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 9.293V5.5A.5.5 0 0 1 8 5'
-      />
-    </svg>
-  )
+import type { ProductDesign } from '@payload-types'
+import { RichText } from '@payloadcms/richtext-lexical/react'
+import { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
+import { Gallery } from './page.client'
+import { LinkIcon, DownloadIcon } from '@/components/icons'
+import { BuyMeACoffeeWidget } from '@/components/BuyMeACoffeeWidget'
+import H1 from '@/components/ui/H1'
+
+export const Description = ({ data }: { data: SerializedEditorState }) => {
+  return <RichText data={data} />
 }
 
-export const LinkIcon = ({
-  fill = 'currentColor',
-  filled,
-  size,
-  height,
-  width,
-  ...props
-}) => {
-  return (
-    <svg
-      fill={filled ? fill : 'none'}
-      height={size || height || 16}
-      viewBox='0 0 16 16'
-      width={size || width || 16}
-      xmlns='http://www.w3.org/2000/svg'
-      {...props}
-    >
-      {/* <path
-        fill-rule='evenodd'
-        fill={fill}
-        stroke={fill}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth={1.5}
-        d='M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5'
-      />
-      <path
-        fill={fill}
-        stroke={fill}
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth={1.5}
-        fill-rule='evenodd'
-        d='M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0z'
-      /> */}
-      <path
-        fill={fill}
-        d='M14 0a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zM5.904 10.803 10 6.707v2.768a.5.5 0 0 0 1 0V5.5a.5.5 0 0 0-.5-.5H6.525a.5.5 0 1 0 0 1h2.768l-4.096 4.096a.5.5 0 0 0 .707.707'
-      />
-    </svg>
-  )
-}
 async function queryProductDesignBySlug(
-  slug: string
+  slug: string | undefined
 ): Promise<ProductDesign | null> {
   const { isEnabled: draft } = await draftMode()
   const payload = await getPayload({ config: configPromise })
@@ -102,36 +39,74 @@ async function queryProductDesignBySlug(
       title: true,
       description: true,
       mainImage: true,
-      downloadLink: true,
-      enableDownloads: true,
       slug: true,
+      enableDownload: true,
+      enableMakerworld: true,
+      enablePurchase: true,
+      makerworldLink: true,
+      purchaseLink: true,
+      downloadLink: true,
+      details: true,
+      extraImages: true,
+      enableExtraImages: true,
+      extraRichTextContent: true,
+      enableWrittenContent: true,
     },
   })
 
-  return result.docs?.[0] || null
+  return result.docs?.[0] || null || undefined
 }
 
 export default async function ProductDesignPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { slug?: string }
+  params: Promise<{ slug?: string }>
 }) {
-  const { slug = '' } = params
+  const resolvedParams = await paramsPromise
+  const { slug = '' } = resolvedParams
   const product = await queryProductDesignBySlug(slug)
 
   if (!product) {
-    return <div>Product not found</div>
+    return (
+      // 404
+      <div className='flex flex-col justify-center w-full text-center align-items-center md:gap-y-4'>
+        <H1 className='text-4xl font-black'>Product Design Not Found 😓</H1>
+        <div>
+          <Button
+            as={Link}
+            variant='ghost'
+            color='primary'
+            size='lg'
+            aria-label='Go Back'
+            href='/product-design'
+            className='w-auto'
+          >
+            ⟵ Back to all product designs
+          </Button>
+        </div>
+      </div>
+    )
   }
 
+  const showMakerworld =
+    (product.enableMakerworld ?? false) && (product.makerworldLink ?? false)
+
+  const showDownload =
+    (product.enableDownload ?? false) && (product.downloadLink ?? false)
+
+  const showPurchase =
+    (product.enablePurchase ?? false) && (product.purchaseLink ?? false)
+
+  const showButtonGroup = showMakerworld || showDownload || showPurchase
+
   return (
-    <article className='flex flex-col gap-4 '>
+    <article className='flex flex-col gap-y-3 md:gap-y-6 '>
       <div className='w-full'>
-        {product.title && (
-          <h1 className='mb-4 text-3xl font-bold text-left'>{product.title}</h1>
-        )}
+        <H1 className='text-3xl font-bold text-left'>{product.title}</H1>
       </div>
-      <div className='flex flex-row w-full gap-x-8'>
-        <div className='w-3/5'>
+      <div className='flex flex-col w-full md:flex-row md:gap-x-8'>
+        {/* CONTENT */}
+        <div className='w-full md:w-3/5'>
           {product.mainImage && (
             <div className='mb-4 overflow-hidden rounded aspect-4/3'>
               <Media
@@ -142,46 +117,110 @@ export default async function ProductDesignPage({
             </div>
           )}
         </div>
-        <div className='w-full text-left md:w-2/5'>
-          {product.description && (
-            <p className='mb-4 text-gray-700'>{product.description}</p>
-          )}
-          {product.enableDownloads && product.downloadLink && (
-            <ButtonGroup variant='ghost' color='primary' size='lg'>
-              <Button
-                className='float-left align-self-start align-start'
-                endContent={<DownloadIcon width={'20'} height={'20'} />}
-                aria-label='Take a photo'
-                href={product.downloadLink}
-                as={Link}
-                rel='noopener noreferrer'
+        {/* RIGHT COLUMN */}
+        <div className='flex flex-col justify-between w-full h-auto text-left md:w-2/5 md:gap-y-6'>
+          <div className='mb-4'>
+            {product.details && <Description data={product.details} />}
+          </div>
+          <div className='my-4'>
+            {showButtonGroup ? (
+              <ButtonGroup
+                variant='ghost'
+                color='primary'
+                size='lg'
+                className='flex flex-row w-full'
               >
-                Download
-              </Button>
-              <Button
-                className=''
-                href={product.downloadLink}
-                as={Link}
-                rel='noopener noreferrer'
-                aria-label='Take a photo'
-                endContent={<LinkIcon width={'20'} height={'20'} />}
-              >
-                MakerWorld
-              </Button>
-              <Button
-                className=''
-                href={product.downloadLink}
-                as={Link}
-                rel='noopener noreferrer'
-                aria-label='Take a photo'
-                endContent={<LinkIcon width={'20'} height={'20'} />}
-              >
-                Buy
-              </Button>
-            </ButtonGroup>
-          )}
+                {showDownload && (
+                  <Button
+                    className='flex-grow float-left align-self-start align-start'
+                    endContent={<DownloadIcon width={'20'} height={'20'} />}
+                    aria-label='Download project files'
+                    href={
+                      typeof product.downloadLink === 'object' &&
+                      product.downloadLink?.url
+                        ? product.downloadLink.url
+                        : undefined
+                    }
+                    as={Link}
+                  >
+                    Download
+                  </Button>
+                )}
+                {showMakerworld && (
+                  <Button
+                    className='flex-grow'
+                    href={product.makerworldLink ?? undefined}
+                    as={Link}
+                    rel='noopener noreferrer'
+                    aria-label='View on Makerworld'
+                    target='_blank'
+                    endContent={<LinkIcon width={'20'} height={'20'} />}
+                  >
+                    MakerWorld
+                  </Button>
+                )}
+                {showPurchase && (
+                  <Button
+                    className='flex-grow'
+                    as={Link}
+                    href={product.purchaseLink ?? undefined}
+                    rel='noopener noreferrer'
+                    aria-label='Purchase a copy'
+                    endContent={<LinkIcon width={'20'} height={'20'} />}
+                  >
+                    Buy
+                  </Button>
+                )}
+              </ButtonGroup>
+            ) : (
+              <ButtonGroup isDisabled className='w-full'>
+                <Button
+                  className='flex-grow w-full align-middle align-self-start'
+                  endContent={<DownloadIcon width={'20'} height={'20'} />}
+                  aria-label='Content download coming soon.'
+                >
+                  Download Coming Soon
+                </Button>
+              </ButtonGroup>
+            )}
+            <Link href='/product-design' className='w-full my-2 text-center'>
+              ← Back to all product designs
+            </Link>
+          </div>
+          {/* BMAC */}
+          <div>
+            <BuyMeACoffeeWidget />
+          </div>
         </div>
       </div>
+      {product.enableWrittenContent && product.extraRichTextContent && (
+        <section className='flex flex-col w-full'>
+          {' '}
+          <Description data={product.extraRichTextContent} />
+        </section>
+      )}
+
+      {product.enableExtraImages && (
+        <Gallery
+          images={
+            product.extraImages
+              ?.map((image) => {
+                if (typeof image === 'string') {
+                  return { url: image, alt: '' }
+                } else if (image?.url) {
+                  return { url: image.url, alt: image.alt || '' }
+                }
+                return null // Filter out invalid items
+              })
+              .filter(Boolean) as { url: string; alt: string }[] // Ensure type matches
+          }
+          heroImage={
+            typeof product.mainImage === 'object' && product.mainImage?.url
+              ? { url: product.mainImage.url, alt: product.mainImage.alt || '' }
+              : { url: '', alt: '' } // Fallback to an empty object if not valid
+          }
+        />
+      )}
     </article>
   )
 }

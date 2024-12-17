@@ -41,7 +41,7 @@ export default function RootLayout({
             <LogoProvider>
               <Test />
             </LogoProvider>
-            <main className='container flex-grow px-12 pt-16 mx-auto max-w-7xl'>
+            <main className='container flex-grow px-12 mx-auto md:pt-16 max-w-7xl'>
               {children}
             </main>
             <footer className='flex items-center justify-center w-full py-3'>

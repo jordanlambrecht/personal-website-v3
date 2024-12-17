@@ -1,7 +1,15 @@
 import type { CollectionConfig } from 'payload'
 import { slugField } from '@/fields/slug'
-import type { Field } from 'payload'
-import { checkbox } from '@nextui-org/theme'
+
+import {
+  FixedToolbarFeature,
+  HeadingFeature,
+  LinkFeature,
+  HorizontalRuleFeature,
+  InlineToolbarFeature,
+  lexicalEditor,
+} from '@payloadcms/richtext-lexical'
+// import { checkbox } from '@nextui-org/theme'
 
 export const ProductDesigns: CollectionConfig = {
   slug: 'product-design',
@@ -22,103 +30,169 @@ export const ProductDesigns: CollectionConfig = {
   },
   fields: [
     {
-      type: 'group',
-      name: 'links',
-      label: 'Links',
-      admin: {
-        position: 'sidebar',
-      },
-      fields: [
+      type: 'tabs',
+      // admin: {
+      //   position: 'sidebar',
+      // },
+      tabs: [
         {
-          type: 'group',
-          name: 'enableLinks',
-          label: 'Enable',
+          label: 'Content',
+          fields: [
+            // required
+            {
+              name: 'title',
+              type: 'text',
+              required: true,
+            },
+            {
+              name: 'mainImage',
+              label: 'Main Image',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
+            {
+              type: 'richText',
+              name: 'details',
+              label: 'Details',
+              editor: lexicalEditor({
+                features: ({ rootFeatures }) => {
+                  return [
+                    ...rootFeatures,
+                    HeadingFeature({
+                      enabledHeadingSizes: ['h2', 'h3', 'h4'],
+                    }),
+                    FixedToolbarFeature(),
+                    InlineToolbarFeature(),
+                    HorizontalRuleFeature(),
+                    LinkFeature(),
+                  ]
+                },
+              }),
+            },
+          ],
+        },
+
+        {
+          label: 'Extra Content',
           fields: [
             {
-              type: 'checkbox',
-              name: 'enableMakerworld',
-              label: 'Enable Makerworld',
-              defaultValue: false,
-            },
-            {
-              type: 'checkbox',
-              name: 'enableDownload',
-              label: 'Enable Download',
-              defaultValue: false,
-            },
-            {
-              name: 'enableBuy',
-              label: 'Enable Buy',
-              type: 'checkbox',
-              defaultValue: false,
+              type: 'row',
+              fields: [
+                {
+                  type: 'checkbox',
+                  name: 'enableExtraImages',
+                  label: 'Enable Extra Images',
+                  defaultValue: false,
+                },
+                {
+                  type: 'checkbox',
+                  name: 'enableWrittenContent',
+                  label: 'Enable Extra Written Content',
+                  defaultValue: false,
+                },
+              ],
             },
 
             {
-              name: 'makeworldLink',
-              type: 'text',
-              label: 'Makerworld Link',
+              type: 'upload',
+              relationTo: 'media',
+              name: 'extraImages',
+              hasMany: true,
+              filterOptions: {
+                mimeType: { contains: 'image' },
+              },
               admin: {
-                placeholder: 'Paste the MakerWorld URL here',
-                condition: (data, siblingData, { user }) => {
-                  if (data.enableMakerworld) {
-                    return true
-                  } else {
-                    return false
-                  }
-                },
+                condition: (data, siblingData) =>
+                  Boolean(siblingData?.enableExtraImages),
               },
             },
             {
-              name: 'purchaseLink',
-              type: 'text',
-              label: 'Purchase Link',
+              type: 'richText',
+              name: 'extraRichTextContent',
+              label: 'Extra Written Content',
               admin: {
-                placeholder: 'Paste the Etsy URL here',
-                condition: (data, siblingData, { user }) => {
-                  if (data.enableBuy) {
-                    return true
-                  } else {
-                    return false
-                  }
-                },
+                condition: (data, siblingData) =>
+                  Boolean(siblingData?.enableWrittenContent),
               },
-            },
-            {
-              name: 'downloadLink',
-              type: 'text',
-              label: 'Download Link',
-              admin: {
-                placeholder: 'Paste the Download URL here',
-                condition: (data, siblingData, { user }) => {
-                  if (data.enableDownload) {
-                    return true
-                  } else {
-                    return false
-                  }
+              editor: lexicalEditor({
+                features: ({ rootFeatures }) => {
+                  return [
+                    ...rootFeatures,
+                    HeadingFeature({
+                      enabledHeadingSizes: ['h2', 'h3', 'h4'],
+                    }),
+                    FixedToolbarFeature(),
+                    InlineToolbarFeature(),
+                    HorizontalRuleFeature(),
+                    LinkFeature(),
+                  ]
                 },
-              },
+              }),
             },
           ],
         },
       ],
     },
+
     {
-      name: 'title',
-      type: 'text',
-      required: true,
+      type: 'collapsible',
+      label: 'Links & Such',
+      admin: {
+        position: 'sidebar',
+      },
+      fields: [
+        {
+          type: 'checkbox',
+          name: 'enableMakerworld',
+          label: 'Enable Makerworld',
+          defaultValue: false,
+        },
+        {
+          type: 'checkbox',
+          name: 'enableDownload',
+          label: 'Enable Download',
+          defaultValue: false,
+        },
+        {
+          type: 'checkbox',
+          name: 'enablePurchase',
+          label: 'Enable Buy',
+          defaultValue: false,
+        },
+        {
+          name: 'makerworldLink',
+          type: 'text',
+          label: 'Makerworld Link',
+          admin: {
+            placeholder: 'enter a link to the Makerworld project',
+            condition: (data, siblingData) =>
+              Boolean(siblingData?.enableMakerworld),
+          },
+        },
+
+        {
+          name: 'downloadLink',
+          type: 'relationship',
+          label: 'Download File',
+          relationTo: 'product-files', // Link to ProductFiles
+          admin: {
+            condition: (data, siblingData) =>
+              Boolean(siblingData?.enableDownload), // Only show if downloads are enabled
+          },
+        },
+        {
+          name: 'purchaseLink',
+          type: 'text',
+          label: 'Purchase Link',
+          admin: {
+            placeholder: 'enter a link to Etsy',
+            condition: (data, siblingData) => Boolean(siblingData?.enableBuy),
+          },
+        },
+      ],
     },
-    {
-      name: 'mainImage',
-      label: 'Main Image',
-      type: 'upload',
-      relationTo: 'media', // Adjust based on your media collection slug
-      required: true,
-    },
-    {
-      name: 'description',
-      type: 'textarea',
-      required: true,
-    },
+
     {
       name: 'publishedAt',
       type: 'date',
@@ -145,7 +219,7 @@ export const ProductDesigns: CollectionConfig = {
     },
     ...slugField(),
   ],
-  upload: true,
+  // upload: true,
 }
 
 export default ProductDesigns

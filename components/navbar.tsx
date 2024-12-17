@@ -26,7 +26,7 @@ export default function Test() {
   return (
     <Navbar
       maxWidth='2xl'
-      height={'12rem'}
+      height={'8rem'}
       classNames={{
         item: [
           // "data-[active=true]:after:content-['']",
@@ -44,13 +44,13 @@ export default function Test() {
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent>
+        <NavbarBrand>
+          <LogoRotator />
+        </NavbarBrand>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           className='sm:hidden'
         />
-        <NavbarBrand>
-          <LogoRotator />
-        </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent className='hidden gap-4 sm:flex' justify='end'>

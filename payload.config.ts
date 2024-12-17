@@ -14,7 +14,7 @@ import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { ProductDesigns } from './collections/ProductDesigns'
 
-import { ThreeDFiles } from './collections/ThreeDFiles'
+import { ProductFiles } from './collections/ProductFiles'
 import { Lists } from './collections/Lists'
 import { Pages } from './collections/Pages'
 
@@ -32,7 +32,7 @@ export default buildConfig({
     Users,
     Media,
     ProductDesigns,
-    ThreeDFiles,
+    ProductFiles,
     Lists,
     Categories,
     Pages,
