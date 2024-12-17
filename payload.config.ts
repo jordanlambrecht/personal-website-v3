@@ -2,7 +2,6 @@
 // storage-adapter-import-placeholder
 // import { postgresAdapter } from '@payloadcms/db-postgres'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -20,7 +19,6 @@ import { Pages } from './collections/Pages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 export default buildConfig({
   admin: {
     user: Users.slug,
@@ -49,15 +47,11 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
-    payloadCloudPlugin(),
     seoPlugin({
       collections: ['lists'],
       uploadsCollection: 'media',
       generateTitle: ({ doc }) => `Jordan Lambrecht — ${doc.title}`,
       generateDescription: ({ doc }) => doc.excerpt,
-    }),
-    redirectsPlugin({
-      collections: ['pages'],
     }),
     // storage-adapter-placeholder
   ],
